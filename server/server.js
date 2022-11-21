@@ -1,13 +1,17 @@
-const express = require('express')
+require("dotenv").config();
+var express = require('express'); // Express web server framework
+var cors = require('cors');
+var cookieParser = require('cookie-parser');
 
-const port = 3001
-const app = express()
+const authRouter = require("./routes/authorization_route");
+ 
+var app = express();
+ 
+app.use(express.static(__dirname + '/public'))
+    .use(cors())
+    .use(cookieParser());
 
+app.use("/", authRouter);
 
-app.get('/', (req,res) => {
-    res.writeHead(200, { 'Content-Type': 'text/plain' });
-    res.write('Hello World');
-    res.end();
-})
-
-app.listen(port)
+console.log('Listening on 3001');
+app.listen(3001);

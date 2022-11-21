@@ -2,6 +2,7 @@
 
 # important
 /server/config.js
+.env
 
 # dependencies
 client/node_modules
