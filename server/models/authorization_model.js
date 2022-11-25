@@ -48,7 +48,7 @@ getAuthCallback = (req, res) => {
   var storedState = req.cookies ? req.cookies[stateKey] : null;
 
   if (state === null || state !== storedState) {
-    res.redirect('/#' +
+    res.redirect('http://localhost:3000/#' +
       querystring.stringify({
         error: 'state_mismatch'
       }));
@@ -85,13 +85,13 @@ getAuthCallback = (req, res) => {
         });
 
         // we can also pass the token to the browser to make requests from there
-        res.redirect('/#' +
+        res.redirect('http://localhost:3000/#' +
           querystring.stringify({
             access_token: access_token,
             refresh_token: refresh_token
           }));
       } else {
-        res.redirect('/#' +
+        res.redirect('http://localhost:3000/#' +
           querystring.stringify({
             error: 'invalid_token'
           }));
@@ -104,6 +104,7 @@ getAuthCallback = (req, res) => {
 getRefreshAuthToken = (req, res) => {
   // requesting access token from refresh token
   var refresh_token = req.query.refresh_token;
+  console.log("REFRESH TOKEN IS " + refresh_token);
   var authOptions = {
     url: 'https://accounts.spotify.com/api/token',
     headers: { 'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64')) },
