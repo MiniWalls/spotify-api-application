@@ -1,10 +1,11 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import Nav from 'react-bootstrap/Nav';
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import axios from 'axios';
 
 function App() {
+  const [accessToken, setAccessToken] = useState(null);
+  const [userData, setUserData] = useState([]);
 
   function getHashParams() {
     var hashParams = {};
@@ -15,13 +16,11 @@ function App() {
     }
     return hashParams;
   }
-  
 
   async function getRefreshToken(){
     var params = getHashParams();
     console.log("PARAMS ARE " + JSON.stringify(params.refresh_token));
     const address = 'http://localhost:3001/refresh_token';
-
 
     const response = await axios({
       method: "get",
@@ -29,21 +28,33 @@ function App() {
       params: {
         refresh_token: params.refresh_token
       }
-
     })
+    setAccessToken(response.data.access_token);
     console.log(response.data.access_token);
-
-/*     axios.get(address, {
-      refresh_token: params.refresh_token
-    })
-    .then((response) => {
-      console.log("THIS IS THE RESPONSE");
-      console.log(response);
-    })
-    .catch(error => {
-      console.log(error);
-    }) */
   }
+
+  async function getUserInfo(){
+    const address = 'https://api.spotify.com/v1/me';
+
+      const response = await axios({
+        method: "get",
+        url: address,
+        headers: {
+          'Authorization': 'Bearer ' + accessToken
+        }
+      })
+      console.log(response);
+      setUserData(response);
+  };
+
+  useEffect(() => {
+    setAccessToken(getHashParams().access_token)
+    console.log("We are in react hook and token is " + accessToken);
+    if(accessToken){
+      getUserInfo();
+    }
+  }, [])
+
 
   return (
     <div className="App">
