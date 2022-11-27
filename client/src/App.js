@@ -5,7 +5,7 @@ import axios from 'axios';
 
 function App() {
   const [accessToken, setAccessToken] = useState(null);
-  const [userData, setUserData] = useState([]);
+  const [userData, setUserData] = useState(null);
 
   function getHashParams() {
     var hashParams = {};
@@ -14,12 +14,12 @@ function App() {
     while ( e = r.exec(q)) {
        hashParams[e[1]] = decodeURIComponent(e[2]);
     }
+    //console.log(hashParams);
     return hashParams;
   }
 
   async function getRefreshToken(){
     var params = getHashParams();
-    console.log("PARAMS ARE " + JSON.stringify(params.refresh_token));
     const address = 'http://localhost:3001/refresh_token';
 
     const response = await axios({
@@ -30,7 +30,7 @@ function App() {
       }
     })
     setAccessToken(response.data.access_token);
-    console.log(response.data.access_token);
+    //onsole.log(response.data.access_token);
   }
 
   async function getUserInfo(){
@@ -45,25 +45,45 @@ function App() {
       })
       console.log(response);
       setUserData(response);
+      document.getElementById('login').style.display = 'none';
+      document.getElementById('loggedin').style.display = 'block';
   };
 
   useEffect(() => {
-    setAccessToken(getHashParams().access_token)
-    console.log("We are in react hook and token is " + accessToken);
+    if(userData){
+      const userDataList = document.getElementById("user-data");
+      userDataList.innerHTML = '';
+      userDataList.append(userData.data.country + '\t');
+      userDataList.append(userData.data.display_name + '\t');
+      userDataList.append(userData.data.email + '\t');
+      userDataList.append(userData.data.id + '\t');
+      userDataList.append(userData.data.product + '\t');
+    }
+  }, [userData])
+
+  useEffect(() => {
     if(accessToken){
       getUserInfo();
-    }
+    }else { document.getElementById('loggedin').style.display = 'none'; }
+  }, [accessToken])
+
+  useEffect(() => {
+    setAccessToken(getHashParams().access_token);
   }, [])
 
 
   return (
     <div className="App">
-      <div>
-        <h2>Example of the Authorization code flow with Spotify</h2>
+      <h2>Example of the Authorization code flow with Spotify</h2>
+      <div id="login">
         <a className="btn btn-primary btn-lg" href="http://localhost:3001/login">Login with Spotify</a>
-        <button className="btn btn-primary" onClick={() => getRefreshToken()}>Get refresh token</button>
       </div>
-      <div id="signedInDiv"></div>
+      <div id="loggedin">
+        <button className="btn btn-primary" onClick={() => getRefreshToken()}>Get refresh token</button>
+        <ul id="user-data">
+          
+        </ul>
+      </div>
     </div>
   );
 }
