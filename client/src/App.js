@@ -2,6 +2,7 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import {useEffect, useState} from 'react';
 import axios from 'axios';
+import UserInfoDisplay from './components/UserInfoDisplay';
 
 function App() {
   const [accessToken, setAccessToken] = useState(null);
@@ -49,17 +50,17 @@ function App() {
       document.getElementById('loggedin').style.display = 'block';
   };
 
-  useEffect(() => {
+/*   useEffect(() => {
     if(userData){
       const userDataList = document.getElementById("user-data");
-      userDataList.innerHTML = '';
+       userDataList.innerHTML = '';
       userDataList.append(userData.data.country + '\t');
       userDataList.append(userData.data.display_name + '\t');
       userDataList.append(userData.data.email + '\t');
       userDataList.append(userData.data.id + '\t');
-      userDataList.append(userData.data.product + '\t');
+      userDataList.append(userData.data.product + '\t'); 
     }
-  }, [userData])
+  }, [userData]) */
 
   useEffect(() => {
     if(accessToken){
@@ -81,7 +82,7 @@ function App() {
       <div id="loggedin">
         <button className="btn btn-primary" onClick={() => getRefreshToken()}>Get refresh token</button>
         <ul id="user-data">
-          
+          <UserInfoDisplay data={userData}/>
         </ul>
       </div>
     </div>
