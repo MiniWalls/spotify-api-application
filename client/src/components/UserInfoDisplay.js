@@ -1,14 +1,14 @@
 export default function UserInfoDisplay(props){
     console.log(JSON.stringify(props));
-    if(props.data.data){
+    if(props.user){
         return(
             <div className="UserInfo">
                 Hello world!
-                <p>{props.data.data.country}</p>
-{/*                 <p>{props.data.name}</p>
-                <p>{props.data.email}</p>
-                <p>{props.data.id}</p>
-                <p>{props.data.product}</p> */}
+                <p>{props.user.data.country}</p>
+                <p>{props.user.data.name}</p>
+                <p>{props.user.data.email}</p>
+                <p>{props.user.data.id}</p>
+                <p>{props.user.data.product}</p>
             </div>
         );
     }
