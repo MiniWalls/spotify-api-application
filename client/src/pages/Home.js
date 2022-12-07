@@ -2,6 +2,8 @@ import UserInfoDisplay from "../components/UserInfoDisplay";
 import LogInDisplay from "../components/LogInDisplay";
 import axios from 'axios';
 import {useEffect, useState} from 'react';
+import Button from "react-bootstrap/Button";
+import CryptoJS from "crypto-js";
 
 export default function Home(){
     const [accessToken, setAccessToken] = useState(null);
@@ -14,7 +16,6 @@ export default function Home(){
         while ( e = r.exec(q)) {
            hashParams[e[1]] = decodeURIComponent(e[2]);
         }
-        //console.log(hashParams);
         return hashParams;
       }
 
@@ -30,21 +31,30 @@ export default function Home(){
         }
     })
     setAccessToken(response.data.access_token);
-    //console.log(response.data.access_token);
     }
 
     async function getUserInfo(){
-    const address = 'https://api.spotify.com/v1/me';
+        if(sessionStorage.getItem("userData") == null){ 
+            const address = 'https://api.spotify.com/v1/me';
 
-        const response = await axios({
-        method: "get",
-        url: address,
-        headers: {
-            'Authorization': 'Bearer ' + accessToken
+            const response = await axios({
+            method: "get",
+            url: address,
+            headers: {
+                'Authorization': 'Bearer ' + accessToken
+            }
+            })
+            console.log("Api data");
+            setUserData(response);
+            const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(response), 'secret key 123').toString();
+            sessionStorage.setItem("userData", encryptedData);
+        } else {
+            console.log("session storage data");
+            const encryptedData = sessionStorage.getItem("userData");
+            const decryptedBytes = CryptoJS.AES.decrypt(encryptedData, 'secret key 123');
+            const decryptedData = JSON.parse(decryptedBytes.toString(CryptoJS.enc.Utf8));
+            setUserData(decryptedData);
         }
-        })
-        console.log(response);
-        setUserData(response);
         document.getElementById('login').style.display = 'none';
         document.getElementById('loggedin').style.display = 'block';
     };
@@ -66,6 +76,7 @@ export default function Home(){
                 <LogInDisplay />
             </div>
             <div id="loggedin">
+                <Button onClick={() => getRefreshToken()}>Get refresh token</Button>
                 <UserInfoDisplay user={userData}/>
             </div>
         </>
