@@ -19,7 +19,7 @@ export default function Footer(){
                     <Col md="3">
                         <h5 className="text-uppercase">Links</h5>
                         <ul className="list-unstyled">
-                            <li><a href="#!">Link 1</a></li>
+                            <li><a href="https://github.com/MiniWalls">My GitHub</a></li>
                             <li><a href="#!">Link 2</a></li>
                             <li><a href="#!">Link 3</a></li>
 
@@ -27,7 +27,7 @@ export default function Footer(){
                     </Col>
 
                     <Col md="3">
-                        <h5 className="text-uppercase">Links</h5>
+                        <h5 className="text-uppercase">Account</h5>
                         <ul className="list-unstyled">
                             <li><a href="#!">Link 1</a></li>
                             <li><a href="#!">Link 2</a></li>
