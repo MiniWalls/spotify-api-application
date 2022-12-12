@@ -8,6 +8,7 @@ import CryptoJS from "crypto-js";
 export default function Home(){
     const [accessToken, setAccessToken] = useState(null);
     const [userData, setUserData] = useState(null);
+    const key = "25450D3276766583AA67F143F9DC6C7D"; //In this case we are not implementing more secure encryption solution
 
     function getHashParams() {
         var hashParams = {};
@@ -44,14 +45,12 @@ export default function Home(){
                 'Authorization': 'Bearer ' + accessToken
             }
             })
-            console.log("Api data");
             setUserData(response);
-            const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(response), 'secret key 123').toString();
+            const encryptedData = CryptoJS.AES.encrypt(JSON.stringify(response), key).toString();
             sessionStorage.setItem("userData", encryptedData);
         } else {
-            console.log("session storage data");
             const encryptedData = sessionStorage.getItem("userData");
-            const decryptedBytes = CryptoJS.AES.decrypt(encryptedData, 'secret key 123');
+            const decryptedBytes = CryptoJS.AES.decrypt(encryptedData, key);
             const decryptedData = JSON.parse(decryptedBytes.toString(CryptoJS.enc.Utf8));
             setUserData(decryptedData);
         }
