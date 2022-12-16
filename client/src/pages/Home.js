@@ -2,11 +2,11 @@ import UserInfoDisplay from "../components/UserInfoDisplay";
 import LogInDisplay from "../components/LogInDisplay";
 import axios from 'axios';
 import {useEffect, useState} from 'react';
+import Button from 'react-bootstrap/Button'
 
 export default function Home(){
     const [accessToken, setAccessToken] = useState(null);
     const [userData, setUserData] = useState(null);
-    const key = "25450D3276766583AA67F143F9DC6C7D"; //In this case we are not implementing more secure encryption solution
 
     function getHashParams() {
         var hashParams = {};
@@ -20,18 +20,18 @@ export default function Home(){
       }
 
     async function getRefreshToken(){
-    var params = getHashParams();
-    const address = process.env.REACT_APP_SERVER_ADDRESS + '/refresh_token';
+        var params = getHashParams();
+        const address = process.env.REACT_APP_SERVER_ADDRESS + '/refresh_token';
 
-    const response = await axios({
-        method: "get",
-        url: address,
-        params: {
-        refresh_token: params.refresh_token
-        }
-    })
-    setAccessToken(response.data.access_token);
-    //console.log(response.data.access_token);
+        const response = await axios({
+            method: "get",
+            url: address,
+            params: {
+            refresh_token: params.refresh_token
+            }
+        })
+        setAccessToken(response.data.access_token);
+        //console.log(response.data.access_token);
     }
 
     async function getUserInfo(){
@@ -67,6 +67,7 @@ export default function Home(){
                 <LogInDisplay />
             </div>
             <div id="loggedin">
+                <Button onClick={() => getRefreshToken()}>Get refresh token</Button>
                 <UserInfoDisplay user={userData}/>
             </div>
         </>
