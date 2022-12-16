@@ -22,7 +22,7 @@ export default function Home(){
 
     async function getRefreshToken(){
     var params = getHashParams();
-    const address = 'http://localhost:3001/refresh_token';
+    const address = process.env.REACT_APP_SERVER_ADDRESS + '/refresh_token';
 
     const response = await axios({
         method: "get",
