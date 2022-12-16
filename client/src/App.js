@@ -41,16 +41,6 @@ function App() {
 
   return (
     <div className="App">
-{/*       <h2>Example of the Authorization code flow with Spotify</h2>
-      <div id="login">
-        <a className="btn btn-primary btn-lg" href="http://localhost:3001/login">Login with Spotify</a>
-      </div>
-      <div id="loggedin">
-        <button className="btn btn-primary" onClick={() => getRefreshToken()}>Get refresh token</button>
-        <ul id="user-data">
-          <UserInfoDisplay user={userData}/>
-        </ul>
-      </div> */}
       <Container fluid className="app-container">
         <Row>
           <NavBar/>
@@ -58,7 +48,7 @@ function App() {
         <Row>
           <Routes>
             <Route path='/' element={<Home />} />
-            <Route path='/aboutus' element={<Home />} />
+            <Route path='/*' element={<Home />} />
             <Route path='/profile' element={<Home />} />
           </Routes>
         </Row>
