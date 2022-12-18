@@ -2,7 +2,7 @@
 
 # important
 /server/config.js
-.env
+/server/.env
 /server/serverAppEngine.yaml
 
 # dependencies
