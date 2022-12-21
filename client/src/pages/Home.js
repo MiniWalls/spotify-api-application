@@ -53,6 +53,7 @@ export default function Home(){
     useEffect(() => {
     if(accessToken){
         getUserInfo();
+        localStorage.setItem("token", JSON.stringify(getHashParams()));
     }else { document.getElementById('loggedin').style.display = 'none'; }
     }, [accessToken])
 
