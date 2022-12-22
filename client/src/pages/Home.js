@@ -7,6 +7,7 @@ import Button from 'react-bootstrap/Button'
 export default function Home(){
     const [accessToken, setAccessToken] = useState(null);
     const [userData, setUserData] = useState(null);
+    const [state, setState] = useState('loggedout');
 
     function getHashParams() {
         var hashParams = {};
@@ -31,46 +32,63 @@ export default function Home(){
             }
         })
         setAccessToken(response.data.access_token);
-        //console.log(response.data.access_token);
+
     }
 
     async function getUserInfo(){
-    const address = 'https://api.spotify.com/v1/me';
+        const address = 'https://api.spotify.com/v1/me';
 
-        const response = await axios({
-        method: "get",
-        url: address,
-        headers: {
-            'Authorization': 'Bearer ' + accessToken
-        }
+        setState('loading');
+        const config = {
+            headers: {
+                'Authorization': 'Bearer ' + accessToken
+            }
+        };
+        axios.get(address, config)
+        .then((response) => {
+            setState('loggedin');
+            console.log(response);
+            setUserData(response);
         })
-        console.log(response);
-        setUserData(response);
-        document.getElementById('login').style.display = 'none';
-        document.getElementById('loggedin').style.display = 'block';
+        .catch(error => {
+            setState('error');
+            console.log(error);
+        })
     };
 
     useEffect(() => {
     if(accessToken){
+        console.log("access token is " + accessToken);
         getUserInfo();
         localStorage.setItem("token", JSON.stringify(getHashParams()));
-    }else { document.getElementById('loggedin').style.display = 'none'; }
+    }
     }, [accessToken])
 
     useEffect(() => {
     setAccessToken(getHashParams().access_token);
     }, [])
 
-    return(
-        <>
-            <h1>This is demo Spotify API application</h1>
-            <div id="login">
-                <LogInDisplay />
+    if(state === 'loggedout'){
+        return(
+            <div>
+                <h1>This is demo Spotify API application current state of application is: {state}</h1>
+                <LogInDisplay /> 
             </div>
-            <div id="loggedin">
+        )
+    }
+    if(state === 'loading'){
+        return <div>Loading...</div>
+    }
+    if(state === 'error'){
+        return <div>Error loading user</div>
+    }
+    if(state === 'loggedin'){
+        return(
+            <div>
+                <h1>This is demo Spotify API application current state of application is: {state}</h1>
                 <Button onClick={() => getRefreshToken()}>Get refresh token</Button>
                 <UserInfoDisplay user={userData}/>
             </div>
-        </>
-    );
+        )
+    }
 }
