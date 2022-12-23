@@ -51,6 +51,10 @@ export default function Home(){
             setUserData(response);
         })
         .catch(error => {
+            if(error.response.status === 401) {
+                console.log("Refreshing token")
+                getRefreshToken();
+            }
             setState('error');
             console.log(error);
         })
@@ -61,6 +65,7 @@ export default function Home(){
         console.log("access token is " + accessToken);
         getUserInfo();
         localStorage.setItem("token", JSON.stringify(getHashParams()));
+        console.log("token is " + localStorage.getItem("token"));
     }
     }, [accessToken])
 
