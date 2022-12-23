@@ -4,6 +4,7 @@ import { Route, Routes} from 'react-router-dom';
 import NavBar from './components/NavBar';
 import Footer from './components/Footer';
 import Home from './pages/Home';
+import Profile from './pages/Profile';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 
@@ -18,7 +19,7 @@ function App() {
           <Routes>
             <Route path='/' element={<Home />} />
             <Route path='/*' element={<Home />} />
-            <Route path='/profile' element={<Home />} />
+            <Route path='/profile' element={<Profile />} />
           </Routes>
         </Row>
       </Container>

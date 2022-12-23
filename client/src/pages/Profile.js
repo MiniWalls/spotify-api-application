@@ -4,31 +4,22 @@ import axios from 'axios';
 import {useEffect, useState} from 'react';
 import Button from 'react-bootstrap/Button'
 
-export default function Home(){
+export default function Profile(){
     const [accessToken, setAccessToken] = useState(null);
+    const [refreshToken, setRefreshToken] = useState(null);
     const [userData, setUserData] = useState(null);
     const [state, setState] = useState('loggedout');
 
-    function getHashParams() {
-        var hashParams = {};
-        var e, r = /([^&;=]+)=?([^&;]*)/g,
-            q = window.location.hash.substring(1);
-        while ( e = r.exec(q)) {
-           hashParams[e[1]] = decodeURIComponent(e[2]);
-        }
-        //console.log(hashParams);
-        return hashParams;
-      }
-
     async function getRefreshToken(){
-        var params = getHashParams();
+        var params = accessToken;
+        console.log("refresh token is " + accessToken);
         const address = process.env.REACT_APP_SERVER_ADDRESS + '/refresh_token';
 
         const response = await axios({
             method: "get",
             url: address,
             params: {
-            refresh_token: params.refresh_token
+            refresh_token: refreshToken
             }
         })
         setAccessToken(response.data.access_token);
@@ -62,16 +53,19 @@ export default function Home(){
     };
 
     useEffect(() => {
+    console.log(accessToken);
     if(accessToken){
         console.log("access token is " + accessToken);
         getUserInfo();
-        localStorage.setItem("token", JSON.stringify(getHashParams()));
-        console.log("token is " + localStorage.getItem("token"));
+        localStorage.setItem("token", accessToken);
+    } else {
+        console.log("no access token in profile page");
     }
     }, [accessToken])
 
     useEffect(() => {
-    setAccessToken(getHashParams().access_token);
+    setAccessToken(JSON.parse(localStorage.getItem("token")).access_token);
+    setRefreshToken(JSON.parse(localStorage.getItem("token")).refresh_token);
     }, [])
 
     if(state === 'loggedout'){
