@@ -6,6 +6,7 @@ import Button from 'react-bootstrap/Button'
 
 export default function Home(){
     const [accessToken, setAccessToken] = useState(null);
+    const [refreshToken, setRefreshToken] = useState(null);
     const [userData, setUserData] = useState(null);
     const [state, setState] = useState('loggedout');
 
@@ -21,14 +22,13 @@ export default function Home(){
       }
 
     async function getRefreshToken(){
-        var params = getHashParams();
         const address = process.env.REACT_APP_SERVER_ADDRESS + '/refresh_token';
 
         const response = await axios({
             method: "get",
             url: address,
             params: {
-            refresh_token: params.refresh_token
+            refresh_token: refreshToken
             }
         })
         setAccessToken(response.data.access_token);
@@ -71,7 +71,14 @@ export default function Home(){
     }, [accessToken])
 
     useEffect(() => {
-    setAccessToken(getHashParams().access_token);
+    if(getHashParams().access_token === undefined){
+        if(localStorage.getItem("token") != null) {
+            setAccessToken(JSON.parse(localStorage.getItem("token")).access_token);
+            setRefreshToken(JSON.parse(localStorage.getItem("token")).refresh_token);
+        }
+    } else {
+        setAccessToken(getHashParams().access_token);
+    }
     }, [])
 
     if(state === 'loggedout'){
@@ -92,8 +99,8 @@ export default function Home(){
         return(
             <div>
                 <h1>This is demo Spotify API application current state of application is: {state}</h1>
-                <Button onClick={() => getRefreshToken()}>Get refresh token</Button>
-                <UserInfoDisplay user={userData}/>
+                {/* <Button onClick={() => getRefreshToken()}>Get refresh token</Button>
+                <UserInfoDisplay user={userData}/> */}
             </div>
         )
     }
