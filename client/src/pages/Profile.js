@@ -64,8 +64,12 @@ export default function Profile(){
     }, [accessToken])
 
     useEffect(() => {
-    setAccessToken(JSON.parse(localStorage.getItem("token")).access_token);
-    setRefreshToken(JSON.parse(localStorage.getItem("token")).refresh_token);
+    if(localStorage.getItem("token") != null && localStorage.getItem("token") != {}){
+        setAccessToken(JSON.parse(localStorage.getItem("token")).access_token);
+        setRefreshToken(JSON.parse(localStorage.getItem("token")).refresh_token);
+    } else {
+        localStorage.removeItem("token");
+    }
     }, [])
 
     if(state === 'loggedout'){

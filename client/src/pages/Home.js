@@ -3,6 +3,7 @@ import LogInDisplay from "../components/LogInDisplay";
 import axios from 'axios';
 import {useEffect, useState} from 'react';
 import Button from 'react-bootstrap/Button'
+import NowPlayingDisplay from "../components/NowPlayingDisplay";
 
 export default function Home(){
     const [accessToken, setAccessToken] = useState(null);
@@ -22,6 +23,7 @@ export default function Home(){
       }
 
     async function getRefreshToken(){
+        console.log("Token refreshed");
         const address = process.env.REACT_APP_SERVER_ADDRESS + '/refresh_token';
 
         const response = await axios({
@@ -72,9 +74,11 @@ export default function Home(){
 
     useEffect(() => {
     if(getHashParams().access_token === undefined){
-        if(localStorage.getItem("token") != null) {
+        if(localStorage.getItem("token") != null && localStorage.getItem("token") != {}) {
             setAccessToken(JSON.parse(localStorage.getItem("token")).access_token);
             setRefreshToken(JSON.parse(localStorage.getItem("token")).refresh_token);
+        } else {
+            localStorage.removeItem("token");
         }
     } else {
         setAccessToken(getHashParams().access_token);
@@ -99,8 +103,7 @@ export default function Home(){
         return(
             <div>
                 <h1>This is demo Spotify API application current state of application is: {state}</h1>
-                {/* <Button onClick={() => getRefreshToken()}>Get refresh token</Button>
-                <UserInfoDisplay user={userData}/> */}
+                <NowPlayingDisplay getRefreshToken={getRefreshToken} accessToken={accessToken}/>
             </div>
         )
     }
