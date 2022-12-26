@@ -31,9 +31,13 @@ export default function NowPlayingDisplay(props){
         };
         axios.get(address, config)
         .then((response) => {
-            setState('loaded');
-            console.log(response);
-            setNowPlaying(response.data);
+            if(response.status === 204){
+                setState('notplaying');
+            } else if (response.status === 200){
+                setState('loaded');
+                console.log(response);
+                setNowPlaying(response.data);
+            }
         })
         .catch(error => {
             //401 status means unauthorized
@@ -58,11 +62,21 @@ export default function NowPlayingDisplay(props){
         return(
             <Container className="NowPlaying" fluid>
                 <Row>
-                        <div>Nothing is played</div>
-                        <Button onClick={() => getNowPlaying()}>Refresh now playing</Button>
+                    <div>Nothing is played</div>
+                    <Button onClick={() => getNowPlaying()}>Refresh now playing</Button>
                 </Row>
             </Container>
         );
+    }
+    if(state === "notplaying"){
+        return(
+            <Container className="NowPlaying" fluid>
+                <Row>
+                    <div>Nothing is played</div>
+                    <Button onClick={() => getNowPlaying()}>Refresh now playing</Button>
+                </Row>
+            </Container>
+        )
     }
     if(state === "loaded"){
         return(
