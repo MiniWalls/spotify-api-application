@@ -3,27 +3,16 @@ import LogInDisplay from "../components/LogInDisplay";
 import axios from 'axios';
 import {useEffect, useState} from 'react';
 import Button from 'react-bootstrap/Button'
-import NowPlayingDisplay from "../components/NowPlayingDisplay";
 
-export default function Home(){
+export default function Profile(){
     const [accessToken, setAccessToken] = useState(null);
     const [refreshToken, setRefreshToken] = useState(null);
     const [userData, setUserData] = useState(null);
     const [state, setState] = useState('loggedout');
 
-    function getHashParams() {
-        var hashParams = {};
-        var e, r = /([^&;=]+)=?([^&;]*)/g,
-            q = window.location.hash.substring(1);
-        while ( e = r.exec(q)) {
-           hashParams[e[1]] = decodeURIComponent(e[2]);
-        }
-        //console.log(hashParams);
-        return hashParams;
-      }
-
     async function getRefreshToken(){
-        console.log("Token refreshed");
+        var params = accessToken;
+        console.log("refresh token is " + accessToken);
         const address = process.env.REACT_APP_SERVER_ADDRESS + '/refresh_token';
 
         const response = await axios({
@@ -33,6 +22,7 @@ export default function Home(){
             refresh_token: refreshToken
             }
         })
+        localStorage.setItem("token", JSON.stringify(response.data));
         setAccessToken(response.data.access_token);
 
     }
@@ -67,23 +57,19 @@ export default function Home(){
         if(accessToken){
             console.log("access token is " + accessToken);
             getUserInfo();
-            console.log("token is " + localStorage.getItem("token"));
+        } else {
+            console.log("no access token in profile page");
         }
     }, [accessToken])
 
     useEffect(() => {
-    if(getHashParams().access_token === undefined) {
-        if(localStorage.getItem("token") != null && localStorage.getItem("token") != "{}") {
-            console.log(localStorage.getItem("token"));
+        if(localStorage.getItem("token") != null && localStorage.getItem("token") != "{}"){
+            console.log("abc" + JSON.parse(localStorage.getItem("token")));
             setAccessToken(JSON.parse(localStorage.getItem("token")).access_token);
             setRefreshToken(JSON.parse(localStorage.getItem("token")).refresh_token);
         } else {
             localStorage.removeItem("token");
         }
-    } else {
-        setAccessToken(getHashParams().access_token);
-        localStorage.setItem("token", JSON.stringify(getHashParams()));
-    }
     }, [])
 
     if(state === 'loggedout'){
@@ -104,7 +90,8 @@ export default function Home(){
         return(
             <div>
                 <h1>This is demo Spotify API application current state of application is: {state}</h1>
-                <NowPlayingDisplay getRefreshToken={getRefreshToken} accessToken={accessToken}/>
+                <Button onClick={() => getRefreshToken()}>Get refresh token</Button>
+                <UserInfoDisplay user={userData}/>
             </div>
         )
     }
