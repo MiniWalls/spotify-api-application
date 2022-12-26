@@ -4,7 +4,9 @@ import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image'
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import Button from 'react-bootstrap/Button'
+import Button from 'react-bootstrap/Button';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faRotateRight } from '@fortawesome/free-solid-svg-icons';
 
 export default function NowPlayingDisplay(props){
     const [nowPlaying, setNowPlaying] = useState(null);
@@ -65,11 +67,18 @@ export default function NowPlayingDisplay(props){
     if(state === "loaded"){
         return(
             <Container className="NowPlaying" fluid>
-                <Row>
-                        <div>Now playing {nowPlaying.item.artists[0].name} - {nowPlaying.item.name} {msConversion(nowPlaying.progress_ms)}/{msConversion(nowPlaying.item.duration_ms)}</div>
+                <Row md="auto">
+                    <Col>
+                        <Image width="48" height="48" src={nowPlaying.item.album.images[2].url} alt="profile picture"/>
+                        <div>Now playing {nowPlaying.item.artists[0].name} - {nowPlaying.item.name} {msConversion(nowPlaying.progress_ms)}/{msConversion(nowPlaying.item.duration_ms)}
+                        </div>
+                        <Button variant="outline-dark" onClick={() => getNowPlaying()}>
+                            <FontAwesomeIcon icon={faRotateRight} size={'2x'} />
+                        </Button>
+                    </Col>
                 </Row>
                 <Row md="8">
-                    <Button onClick={() => getNowPlaying()}>Refresh now playing</Button>
+                    
                 </Row>
             </Container>
         );

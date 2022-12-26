@@ -22,6 +22,7 @@ export default function Profile(){
             refresh_token: refreshToken
             }
         })
+        localStorage.setItem("token", JSON.stringify(response.data));
         setAccessToken(response.data.access_token);
 
     }
@@ -53,23 +54,22 @@ export default function Profile(){
     };
 
     useEffect(() => {
-    console.log(accessToken);
-    if(accessToken){
-        console.log("access token is " + accessToken);
-        getUserInfo();
-        localStorage.setItem("token", accessToken);
-    } else {
-        console.log("no access token in profile page");
-    }
+        if(accessToken){
+            console.log("access token is " + accessToken);
+            getUserInfo();
+        } else {
+            console.log("no access token in profile page");
+        }
     }, [accessToken])
 
     useEffect(() => {
-    if(localStorage.getItem("token") != null && localStorage.getItem("token") != {}){
-        setAccessToken(JSON.parse(localStorage.getItem("token")).access_token);
-        setRefreshToken(JSON.parse(localStorage.getItem("token")).refresh_token);
-    } else {
-        localStorage.removeItem("token");
-    }
+        if(localStorage.getItem("token") != null && localStorage.getItem("token") != "{}"){
+            console.log("abc" + JSON.parse(localStorage.getItem("token")));
+            setAccessToken(JSON.parse(localStorage.getItem("token")).access_token);
+            setRefreshToken(JSON.parse(localStorage.getItem("token")).refresh_token);
+        } else {
+            localStorage.removeItem("token");
+        }
     }, [])
 
     if(state === 'loggedout'){
