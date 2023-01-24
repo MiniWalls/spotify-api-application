@@ -81,11 +81,11 @@ export default function NowPlayingDisplay(props){
     if(state === "loaded"){
         return(
             <Container className="NowPlaying" fluid>
-                <Row md="auto">
+                <Row md="1">
                     <Col>
-                        <Image width="48" height="48" src={nowPlaying.item.album.images[2].url} alt="profile picture"/>
-                        <div>Now playing {nowPlaying.item.artists[0].name} - {nowPlaying.item.name} {msConversion(nowPlaying.progress_ms)}/{msConversion(nowPlaying.item.duration_ms)}
-                        </div>
+                        <Image width="48" height="48" src={nowPlaying.item.album.images.length !== 0 ? nowPlaying.item.album.images[2].url : "../../public/logo192.png"} />
+                        <p>Now playing {nowPlaying.item.artists[0].name} - {nowPlaying.item.name} {msConversion(nowPlaying.progress_ms)}/{msConversion(nowPlaying.item.duration_ms)}
+                        </p>
                         <Button variant="outline-dark" onClick={() => getNowPlaying()}>
                             <FontAwesomeIcon icon={faRotateRight} size={'2x'} />
                         </Button>
