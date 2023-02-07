@@ -65,7 +65,6 @@ export default function Home(){
 
     useEffect(() => {
         if(accessToken){
-            console.log("access token is " + accessToken);
             getUserInfo();
             console.log("token is " + localStorage.getItem("token"));
         }
@@ -73,8 +72,7 @@ export default function Home(){
 
     useEffect(() => {
     if(getHashParams().access_token === undefined) {
-        if(localStorage.getItem("token") != null && localStorage.getItem("token") != "{}") {
-            console.log(localStorage.getItem("token"));
+        if(localStorage.getItem("token") != null && localStorage.getItem("token") !== "{}") {
             setAccessToken(JSON.parse(localStorage.getItem("token")).access_token);
             setRefreshToken(JSON.parse(localStorage.getItem("token")).refresh_token);
         } else {
