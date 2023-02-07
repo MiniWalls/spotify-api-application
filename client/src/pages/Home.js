@@ -1,8 +1,7 @@
-import UserInfoDisplay from "../components/UserInfoDisplay";
+
 import LogInDisplay from "../components/LogInDisplay";
 import axios from 'axios';
 import {useEffect, useState} from 'react';
-import Button from 'react-bootstrap/Button'
 import NowPlayingDisplay from "../components/NowPlayingDisplay";
 
 export default function Home(){

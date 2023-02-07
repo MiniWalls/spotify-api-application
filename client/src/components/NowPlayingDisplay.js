@@ -2,11 +2,11 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 import Button from 'react-bootstrap/Button';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faRotateRight } from '@fortawesome/free-solid-svg-icons';
+import { faBackwardStep, faForwardStep, faRotateRight } from '@fortawesome/free-solid-svg-icons';
 
 export default function NowPlayingDisplay(props){
   const [nowPlaying, setNowPlaying] = useState(null);
@@ -50,6 +50,12 @@ export default function NowPlayingDisplay(props){
       })
   }
 
+  useEffect(() => {
+    if(props.accessToken && state === 'notloaded'){
+      getNowPlaying();
+    }
+  })
+
   async function skipSong() {
     const address = 'https://api.spotify.com/v1/me/player/next';
 
@@ -64,6 +70,34 @@ export default function NowPlayingDisplay(props){
     .then((response) => {
       console.log(response)
       setState('loaded');
+      setTimeout(()=>{getNowPlaying()}, 5000);
+    })
+    .catch(error => {
+      //401 status means unauthorized
+      if(error.response.status === 401) {
+          console.log("Refreshing token")
+          props.getRefreshToken();
+      }
+      setState('error');
+      console.log(error);
+    })
+  }
+
+  async function skipToPreviousSong () {
+    const address = 'https://api.spotify.com/v1/me/player/previous';
+
+    setState('loading');
+    const config = {
+      headers: {
+        'Authorization': 'Bearer ' + props.accessToken
+      }
+    };
+
+    axios.post(address, {}, config)
+    .then((response) => {
+      console.log(response)
+      setState('loaded');
+      setTimeout(()=>{getNowPlaying()}, 5000);
     })
     .catch(error => {
       //401 status means unauthorized
@@ -108,10 +142,15 @@ export default function NowPlayingDisplay(props){
               <Image width="256" height="256" src={nowPlaying.item.album.images.length !== 0 ? nowPlaying.item.album.images[0].url : "../../public/logo192.png"} />
               <p>Now playing {nowPlaying.item.artists[0].name} - {nowPlaying.item.name} {msConversion(nowPlaying.progress_ms)}/{msConversion(nowPlaying.item.duration_ms)}
               </p>
+              <Button variant="outline-dark" onClick={() => skipToPreviousSong()}>
+                <FontAwesomeIcon icon={faBackwardStep} size={'2x'} />
+              </Button>
               <Button variant="outline-dark" onClick={() => getNowPlaying()}>
                 <FontAwesomeIcon icon={faRotateRight} size={'2x'} />
               </Button>
-              <Button variant="outline-dark" onClick={() => skipSong()}>Skip</Button>
+              <Button variant="outline-dark" onClick={() => skipSong()}>
+                <FontAwesomeIcon icon={faForwardStep} size={'2x'} />
+              </Button>
             </Col>
           </Row>
           <Row md="8">
