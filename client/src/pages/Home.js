@@ -1,8 +1,10 @@
 
 import LogInDisplay from "../components/LogInDisplay";
 import axios from 'axios';
-import {useEffect, useState} from 'react';
+import {createContext, useEffect, useState} from 'react';
 import NowPlayingDisplay from "../components/NowPlayingDisplay";
+
+export const HomeContext = createContext(null)
 
 export default function Home(){
     const [accessToken, setAccessToken] = useState(null);
@@ -56,9 +58,10 @@ export default function Home(){
             if(error.response.status === 401) {
                 console.log("Refreshing token")
                 getRefreshToken();
-            }
+            } else {
             setState('error');
             console.log(error);
+            }
         })
     };
 
@@ -99,10 +102,10 @@ export default function Home(){
     }
     if(state === 'loggedin'){
         return(
-            <div>
+            <HomeContext.Provider value={{ getRefreshToken, accessToken }}>
                 <h1>This is demo Spotify API application current state of application is: {state}</h1>
-                <NowPlayingDisplay getRefreshToken={getRefreshToken} accessToken={accessToken}/>
-            </div>
+                <NowPlayingDisplay/>
+            </HomeContext.Provider>
         )
     }
 }

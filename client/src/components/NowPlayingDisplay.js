@@ -2,15 +2,18 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Image from 'react-bootstrap/Image'
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import Button from 'react-bootstrap/Button';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBackwardStep, faForwardStep, faRotateRight } from '@fortawesome/free-solid-svg-icons';
+import { faBackwardStep, faForwardStep, faMusic, faRotateRight } from '@fortawesome/free-solid-svg-icons';
+import { HomeContext } from '../pages/Home';
 
 export default function NowPlayingDisplay(props){
   const [nowPlaying, setNowPlaying] = useState(null);
   const [state, setState] = useState("notloaded")
+
+  const { getRefreshToken, accessToken } = useContext(HomeContext);
 
   function msConversion(ms){
     const date = new Date(ms);
@@ -20,13 +23,38 @@ export default function NowPlayingDisplay(props){
     return date.getMinutes() + ':' + date.getSeconds()
   }
 
+  async function getTrackAudioFeatures(){
+    const address = `https://api.spotify.com/v1/audio-features/${nowPlaying.item.id}`;
+
+    setState('loading');
+    const config = {
+      headers: {
+        'Authorization': 'Bearer ' + accessToken
+      }
+    };
+    axios.get(address, config)
+    .then((response) => {
+      setState('loaded');
+      setNowPlaying({...nowPlaying, audioFeatures: response.data});
+    })
+    .catch(error => {
+      //401 status means unauthorized
+      if(error.response.status === 401) {
+          console.log("Refreshing token")
+          getRefreshToken();
+      }
+      setState('error');
+      console.log(error);
+    })
+  }
+
   async function getNowPlaying(){
     const address = 'https://api.spotify.com/v1/me/player/currently-playing';
 
     setState('loading');
     const config = {
       headers: {
-        'Authorization': 'Bearer ' + props.accessToken
+        'Authorization': 'Bearer ' + accessToken
       }
     };
     axios.get(address, config)
@@ -43,7 +71,7 @@ export default function NowPlayingDisplay(props){
         //401 status means unauthorized
         if(error.response.status === 401) {
             console.log("Refreshing token")
-            props.getRefreshToken();
+            getRefreshToken();
         }
         setState('error');
         console.log(error);
@@ -51,7 +79,7 @@ export default function NowPlayingDisplay(props){
   }
 
   useEffect(() => {
-    if(props.accessToken && state === 'notloaded'){
+    if(accessToken && state === 'notloaded'){
       getNowPlaying();
     }
   })
@@ -62,7 +90,7 @@ export default function NowPlayingDisplay(props){
     setState('loading');
     const config = {
       headers: {
-        'Authorization': 'Bearer ' + props.accessToken
+        'Authorization': 'Bearer ' + accessToken
       }
     };
 
@@ -76,7 +104,7 @@ export default function NowPlayingDisplay(props){
       //401 status means unauthorized
       if(error.response.status === 401) {
           console.log("Refreshing token")
-          props.getRefreshToken();
+          getRefreshToken();
       }
       setState('error');
       console.log(error);
@@ -89,7 +117,7 @@ export default function NowPlayingDisplay(props){
     setState('loading');
     const config = {
       headers: {
-        'Authorization': 'Bearer ' + props.accessToken
+        'Authorization': 'Bearer ' + accessToken
       }
     };
 
@@ -97,13 +125,13 @@ export default function NowPlayingDisplay(props){
     .then((response) => {
       console.log(response)
       setState('loaded');
-      setTimeout(()=>{getNowPlaying()}, 5000);
+      setTimeout(()=>{getNowPlaying()}, 2000);
     })
     .catch(error => {
       //401 status means unauthorized
       if(error.response.status === 401) {
           console.log("Refreshing token")
-          props.getRefreshToken();
+          getRefreshToken();
       }
       setState('error');
       console.log(error);
@@ -154,7 +182,22 @@ export default function NowPlayingDisplay(props){
             </Col>
           </Row>
           <Row md="8">
-              
+            <Col>
+              <Button variant="outline-dark" onClick={() => getTrackAudioFeatures()}>
+                {`Details `} <FontAwesomeIcon icon={faMusic} size={'1x'} />
+              </Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col>
+              {nowPlaying.audioFeatures &&
+                <div>
+                  {Object.entries(nowPlaying.audioFeatures).map(([key, value]) => {
+                  return <div>{key}: {value}</div>
+                  })}
+                </div>
+                }
+            </Col>
           </Row>
         </Container>
       );
