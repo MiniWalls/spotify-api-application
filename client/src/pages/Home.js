@@ -1,9 +1,10 @@
-import UserInfoDisplay from "../components/UserInfoDisplay";
+
 import LogInDisplay from "../components/LogInDisplay";
 import axios from 'axios';
-import {useEffect, useState} from 'react';
-import Button from 'react-bootstrap/Button'
+import {createContext, useEffect, useState} from 'react';
 import NowPlayingDisplay from "../components/NowPlayingDisplay";
+
+export const HomeContext = createContext(null)
 
 export default function Home(){
     const [accessToken, setAccessToken] = useState(null);
@@ -57,15 +58,15 @@ export default function Home(){
             if(error.response.status === 401) {
                 console.log("Refreshing token")
                 getRefreshToken();
-            }
+            } else {
             setState('error');
             console.log(error);
+            }
         })
     };
 
     useEffect(() => {
         if(accessToken){
-            console.log("access token is " + accessToken);
             getUserInfo();
             console.log("token is " + localStorage.getItem("token"));
         }
@@ -73,8 +74,7 @@ export default function Home(){
 
     useEffect(() => {
     if(getHashParams().access_token === undefined) {
-        if(localStorage.getItem("token") != null && localStorage.getItem("token") != "{}") {
-            console.log(localStorage.getItem("token"));
+        if(localStorage.getItem("token") != null && localStorage.getItem("token") !== "{}") {
             setAccessToken(JSON.parse(localStorage.getItem("token")).access_token);
             setRefreshToken(JSON.parse(localStorage.getItem("token")).refresh_token);
         } else {
@@ -102,10 +102,10 @@ export default function Home(){
     }
     if(state === 'loggedin'){
         return(
-            <div>
+            <HomeContext.Provider value={{ getRefreshToken, accessToken }}>
                 <h1>This is demo Spotify API application current state of application is: {state}</h1>
-                <NowPlayingDisplay getRefreshToken={getRefreshToken} accessToken={accessToken}/>
-            </div>
+                <NowPlayingDisplay/>
+            </HomeContext.Provider>
         )
     }
 }

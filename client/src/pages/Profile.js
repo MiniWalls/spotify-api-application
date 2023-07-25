@@ -11,8 +11,9 @@ export default function Profile(){
     const [state, setState] = useState('loggedout');
 
     async function getRefreshToken(){
-        var params = accessToken;
-        console.log("refresh token is " + accessToken);
+        if(refreshToken === undefined){
+            localStorage.removeItem("token");
+        }
         const address = process.env.REACT_APP_SERVER_ADDRESS + '/refresh_token';
 
         const response = await axios({
@@ -22,6 +23,8 @@ export default function Profile(){
             refresh_token: refreshToken
             }
         })
+        console.log("TOKEN SET TO STORAGE IN REFRESH TOKEN FUNCTION");
+        console.log(response.data);
         localStorage.setItem("token", JSON.stringify(response.data));
         setAccessToken(response.data.access_token);
 
@@ -39,7 +42,7 @@ export default function Profile(){
         axios.get(address, config)
         .then((response) => {
             setState('loggedin');
-            console.log(response);
+            /* console.log(response); */
             setUserData(response);
         })
         .catch(error => {
@@ -55,7 +58,6 @@ export default function Profile(){
 
     useEffect(() => {
         if(accessToken){
-            console.log("access token is " + accessToken);
             getUserInfo();
         } else {
             console.log("no access token in profile page");
@@ -64,7 +66,7 @@ export default function Profile(){
 
     useEffect(() => {
         if(localStorage.getItem("token") != null && localStorage.getItem("token") != "{}"){
-            console.log("abc" + JSON.parse(localStorage.getItem("token")));
+            console.log(JSON.parse(localStorage.getItem("token")));
             setAccessToken(JSON.parse(localStorage.getItem("token")).access_token);
             setRefreshToken(JSON.parse(localStorage.getItem("token")).refresh_token);
         } else {
