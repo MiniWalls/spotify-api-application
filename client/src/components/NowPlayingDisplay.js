@@ -8,8 +8,11 @@ import Button from 'react-bootstrap/Button';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBackwardStep, faForwardStep, faMusic, faRotateRight } from '@fortawesome/free-solid-svg-icons';
 import { HomeContext } from '../pages/Home';
-
-export default function NowPlayingDisplay(props){
+/*This code needs major refractoring
+We are unable to make the track being played update in real time while having multiple features in one component. 
+We only need to rerender everything which uses the track once track changes. Only re render the clock until track changes. 
+We will make the current time be a state which gets updated by getting date now before and after and adding it to the time we got from API*/
+export default function NowPlayingDisplay(){
   const [nowPlaying, setNowPlaying] = useState(null);
   const [state, setState] = useState("notloaded")
 
@@ -188,8 +191,8 @@ export default function NowPlayingDisplay(props){
               </Button>
             </Col>
           </Row>
-          <Row>
-            <Col>
+          <Row > 
+            <Col> 
               {nowPlaying.audioFeatures &&
                 <div>
                   {Object.entries(nowPlaying.audioFeatures).map(([key, value]) => {
